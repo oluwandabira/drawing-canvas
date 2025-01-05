@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas Drawing with Pointer Events</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+    canvas {
+      border: 1px solid #000;
+    }
+    #eventDetails {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      margin-top: 10px;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      width: 80%;
+      text-align: center;
+    }
+    #description {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Canvas Drawing with Pointer Events</h1>
+  <div id="eventDetails">PointerEvent details will appear here...</div>
+  <canvas id="drawingCanvas" width="800" height="600"></canvas>
+  <div id="description">Draw on the canvas to see event details above.</div>
+
+  <script>
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    const eventDetails = document.getElementById('eventDetails');
+
+    // Variables for drawing state
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    // Set up event listeners
+    canvas.addEventListener('pointerdown', (e) => {
+      isDrawing = true;
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+      logPointerEvent(e);
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+      if (!isDrawing) return;
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.stroke();
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+      logPointerEvent(e);
+    });
+
+    canvas.addEventListener('pointerup', () => isDrawing = false);
+    canvas.addEventListener('pointerout', () => isDrawing = false);
+
+    // Function to log PointerEvent properties
+    function logPointerEvent(e) {
+      const pointerType = e.pointerType; // Detect the type of device
+      const eventInfo = `x: ${e.offsetX} | y: ${e.offsetY} | pressure: ${e.pressure} | azimuthAngle: ${e.azimuthAngle} | altitudeAngle: ${e.altitudeAngle} | timestamp: ${e.timeStamp} | pointerType: ${pointerType}`;
+
+      eventDetails.innerHTML = eventInfo;
+
+      console.log(`PointerEvent:`);
+      console.log(`  x: ${e.offsetX}`);
+      console.log(`  y: ${e.offsetY}`);
+      console.log(`  pressure: ${e.pressure}`);
+      console.log(`  azimuthAngle: ${e.azimuthAngle}`);
+      console.log(`  altitudeAngle: ${e.altitudeAngle}`);
+      console.log(`  timestamp: ${e.timeStamp}`);
+      console.log(`  pointerType: ${pointerType}`);
+    }
+
+    // Optional: Improve stroke appearance
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 2;
+  </script>
+</body>
+</html>
