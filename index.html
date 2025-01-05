@@ -16,6 +16,7 @@
     }
     canvas {
       border: 1px solid #000;
+      touch-action: none; /* Disable gestures like scrolling and pinch-to-zoom */
     }
     #eventDetails {
       display: flex;
@@ -32,18 +33,31 @@
       margin-top: 10px;
       font-weight: bold;
     }
+    #colorPicker {
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <h1>Canvas Drawing with Pointer Events</h1>
   <div id="eventDetails">PointerEvent details will appear here...</div>
   <canvas id="drawingCanvas" width="800" height="600"></canvas>
+  <input type="color" id="colorPicker" value="#ff0000" title="Pick a line color">
   <div id="description">Draw on the canvas to see event details above.</div>
 
   <script>
     const canvas = document.getElementById('drawingCanvas');
     const ctx = canvas.getContext('2d');
     const eventDetails = document.getElementById('eventDetails');
+    const colorPicker = document.getElementById('colorPicker');
+
+    // Set initial line color
+    ctx.strokeStyle = colorPicker.value;
+
+    // Update line color when the color picker changes
+    colorPicker.addEventListener('input', () => {
+      ctx.strokeStyle = colorPicker.value;
+    });
 
     // Variables for drawing state
     let isDrawing = false;
@@ -52,12 +66,14 @@
 
     // Set up event listeners
     canvas.addEventListener('pointerdown', (e) => {
+      e.preventDefault(); // Prevent default behavior
       isDrawing = true;
       [lastX, lastY] = [e.offsetX, e.offsetY];
       logPointerEvent(e);
     });
 
     canvas.addEventListener('pointermove', (e) => {
+      e.preventDefault(); // Prevent default behavior
       if (!isDrawing) return;
       ctx.beginPath();
       ctx.moveTo(lastX, lastY);
@@ -67,8 +83,15 @@
       logPointerEvent(e);
     });
 
-    canvas.addEventListener('pointerup', () => isDrawing = false);
-    canvas.addEventListener('pointerout', () => isDrawing = false);
+    canvas.addEventListener('pointerup', (e) => {
+      e.preventDefault(); // Prevent default behavior
+      isDrawing = false;
+    });
+
+    canvas.addEventListener('pointerout', (e) => {
+      e.preventDefault(); // Prevent default behavior
+      isDrawing = false;
+    });
 
     // Function to log PointerEvent properties
     function logPointerEvent(e) {
