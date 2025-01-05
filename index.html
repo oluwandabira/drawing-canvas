@@ -14,6 +14,10 @@
       margin: 0;
       background-color: #f0f0f0;
     }
+    .canvas-container {
+      display: flex;
+      gap: 20px;
+    }
     canvas {
       border: 1px solid #000;
       touch-action: none; /* Disable gestures like scrolling and pinch-to-zoom */
@@ -41,13 +45,18 @@
 <body>
   <h1>Canvas Drawing with Pointer Events</h1>
   <div id="eventDetails">PointerEvent details will appear here...</div>
-  <canvas id="drawingCanvas" width="800" height="600"></canvas>
+  <div class="canvas-container">
+    <canvas id="drawingCanvas" width="800" height="600"></canvas>
+    <canvas id="replicaCanvas" width="800" height="600"></canvas>
+  </div>
   <input type="color" id="colorPicker" value="#ff0000" title="Pick a line color">
   <div id="description">Draw on the canvas to see event details above.</div>
 
   <script>
     const canvas = document.getElementById('drawingCanvas');
+    const replicaCanvas = document.getElementById('replicaCanvas');
     const ctx = canvas.getContext('2d');
+    const replicaCtx = replicaCanvas.getContext('2d');
     const eventDetails = document.getElementById('eventDetails');
     const colorPicker = document.getElementById('colorPicker');
 
@@ -75,10 +84,21 @@
     canvas.addEventListener('pointermove', (e) => {
       e.preventDefault(); // Prevent default behavior
       if (!isDrawing) return;
+
+      // Draw on the original canvas
       ctx.beginPath();
       ctx.moveTo(lastX, lastY);
       ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
+
+      // Replicate the drawing on the replica canvas with scaled line width
+      replicaCtx.beginPath();
+      replicaCtx.moveTo(lastX, lastY);
+      replicaCtx.lineTo(e.offsetX, e.offsetY);
+      replicaCtx.strokeStyle = ctx.strokeStyle;
+      replicaCtx.lineWidth = e.pressure * 20 || 1; // Scale line width with pressure
+      replicaCtx.stroke();
+
       [lastX, lastY] = [e.offsetX, e.offsetY];
       logPointerEvent(e);
     });
@@ -114,6 +134,9 @@
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
     ctx.lineWidth = 2;
+
+    replicaCtx.lineJoin = 'round';
+    replicaCtx.lineCap = 'round';
   </script>
 </body>
 </html>
