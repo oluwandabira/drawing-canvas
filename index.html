@@ -116,7 +116,7 @@
     // Function to log PointerEvent properties
     function logPointerEvent(e) {
       const pointerType = e.pointerType; // Detect the type of device
-      const eventInfo = `x: ${e.offsetX} | y: ${e.offsetY} | pressure: ${e.pressure} | azimuthAngle: ${e.azimuthAngle} | altitudeAngle: ${e.altitudeAngle} | timestamp: ${e.timeStamp} | pointerType: ${pointerType}`;
+      const eventInfo = `pressure: ${e.pressure.toFixed(3)} | azimuthAngle: ${e.azimuthAngle.toFixed(3)} | altitudeAngle: ${e.altitudeAngle.toFixed(3)} | pointerType: ${pointerType}`;
 
       eventDetails.innerHTML = eventInfo;
 
